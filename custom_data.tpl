@@ -12,9 +12,9 @@ sudo apt-get update -y &&
 sudo sudo apt-get install docker-ce docker-ce-cli containerd.io git -y &&
 sudo usermod -aG docker ubuntu
 sudo apt-get update -y
-sudo wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && chmod +x miniconda.sh
-sudo ~/miniconda.sh -b -p $HOME/miniconda
-sudo eval "$(/$HOME/miniconda/bin/conda shell.bash hook)"
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && sudo chmod +x miniconda.sh
+bash ~/miniconda.sh -b -p $HOME/miniconda
+bash eval "$(/$HOME/miniconda/bin/conda shell.bash hook)"
 conda init
 conda update conda -y
 
