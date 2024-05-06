@@ -12,15 +12,15 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "chatwithme-rg"
-  location = "East US"
+  name     = var.resource_group_name
+  location = var.location
   tags = {
     environment = "dev"
   }
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  name                = "chatwithme-nsg"
+  name                = "${azurerm_resource_group.rg.name}-nsg"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -44,7 +44,7 @@ resource "azurerm_network_security_rule" "allow_ssh" {
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = "chatwithme-vnet"
+  name                = "${azurerm_resource_group.rg.name}-vnet"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   address_space       = ["10.123.0.0/16"]
@@ -55,7 +55,7 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 resource "azurerm_subnet" "subnet" {
-  name                 = "chat-subnet"
+  name                 = "${azurerm_resource_group.rg.name}-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.123.1.0/24"]
@@ -67,7 +67,7 @@ resource "azurerm_subnet_network_security_group_association" "nsg_association" {
 }
 
 resource "azurerm_public_ip" "pip" {
-  name                = "chatwithme-pip"
+  name                = "${azurerm_resource_group.rg.name}-pip"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
@@ -78,12 +78,12 @@ resource "azurerm_public_ip" "pip" {
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                = "chatwithme-nic"
+  name                = "${azurerm_resource_group.rg.name}-nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
-    name                          = "chatwithme-ipconfig"
+    name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.pip.id
@@ -95,7 +95,7 @@ resource "azurerm_network_interface" "nic" {
 }
 
 resource "azurerm_linux_virtual_machine" "chat-vm" {
-  name                  = "chatwithme-vm"
+  name                  = "${azurerm_resource_group.rg.name}-vm"
   resource_group_name   = azurerm_resource_group.rg.name
   location              = azurerm_resource_group.rg.location
   size                  = "Standard_DS1_v2"
